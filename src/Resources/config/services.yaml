@@ -1,0 +1,52 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+
+  # Repositories
+  Tourze\BaiduTongjiApiBundle\Repository\FactTrafficTrendRepository:
+    tags:
+      - 'doctrine.repository_service'
+
+  Tourze\BaiduTongjiApiBundle\Repository\RawTongjiReportRepository:
+    tags:
+      - 'doctrine.repository_service'
+
+  Tourze\BaiduTongjiApiBundle\Repository\TongjiSiteRepository:
+    tags:
+      - 'doctrine.repository_service'
+
+  Tourze\BaiduTongjiApiBundle\Repository\TongjiSubDirectoryRepository:
+    tags:
+      - 'doctrine.repository_service'
+
+  # Services
+  Tourze\BaiduTongjiApiBundle\Service\TongjiApiClient: ~
+  Tourze\BaiduTongjiApiBundle\Service\TongjiReportSyncService: ~
+  Tourze\BaiduTongjiApiBundle\Service\TongjiSiteService: ~
+  Tourze\BaiduTongjiApiBundle\Service\AdminMenu: ~
+
+  # Commands
+  Tourze\BaiduTongjiApiBundle\Command\SyncTongjiReportCommand: ~
+  Tourze\BaiduTongjiApiBundle\Command\SyncTongjiSitesCommand: ~
+
+  # Controllers
+  Tourze\BaiduTongjiApiBundle\Controller\Admin\TongjiSiteCrudController: ~
+  Tourze\BaiduTongjiApiBundle\Controller\Admin\RawTongjiReportCrudController: ~
+  Tourze\BaiduTongjiApiBundle\Controller\Admin\TongjiSubDirectoryCrudController: ~
+  Tourze\BaiduTongjiApiBundle\Controller\Admin\FactTrafficTrendCrudController: ~
+
+  tourze.baidu_tongji_api.client:
+    class: Tourze\BaiduTongjiApiBundle\Service\TongjiApiClient
+    arguments:
+      $httpClient: '@http_client'
+      $logger: '@logger'
+    tags:
+      - { name: 'monolog.logger', channel: 'baidu_tongji' }
+
+  tourze.baidu_tongji_api.site_service:
+    class: Tourze\BaiduTongjiApiBundle\Service\TongjiSiteService
+    arguments:
+      $logger: '@logger'
+    tags:
+      - { name: 'monolog.logger', channel: 'baidu_tongji' }
