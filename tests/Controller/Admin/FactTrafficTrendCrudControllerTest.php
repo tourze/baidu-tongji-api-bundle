@@ -123,8 +123,7 @@ final class FactTrafficTrendCrudControllerTest extends AbstractEasyAdminControll
 
     public function testEntityPersistence(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');

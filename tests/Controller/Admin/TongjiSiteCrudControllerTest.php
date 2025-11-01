@@ -112,8 +112,7 @@ final class TongjiSiteCrudControllerTest extends AbstractEasyAdminControllerTest
 
     public function testEntityPersistence(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
@@ -191,8 +190,7 @@ final class TongjiSiteCrudControllerTest extends AbstractEasyAdminControllerTest
 
     public function testEntityValidation(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
 
@@ -230,8 +228,7 @@ final class TongjiSiteCrudControllerTest extends AbstractEasyAdminControllerTest
 
     public function testValidEntityCreation(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
@@ -278,8 +275,7 @@ final class TongjiSiteCrudControllerTest extends AbstractEasyAdminControllerTest
 
     public function testSubDirectoryRelationship(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
@@ -349,8 +345,7 @@ final class TongjiSiteCrudControllerTest extends AbstractEasyAdminControllerTest
 
     public function testDomainValidation(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
 

@@ -123,8 +123,7 @@ final class TongjiSubDirectoryCrudControllerTest extends AbstractEasyAdminContro
 
     public function testEntityPersistence(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
@@ -213,8 +212,7 @@ final class TongjiSubDirectoryCrudControllerTest extends AbstractEasyAdminContro
 
     public function testSubDirectoryValidation(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
@@ -267,8 +265,7 @@ final class TongjiSubDirectoryCrudControllerTest extends AbstractEasyAdminContro
 
     public function testValidSubDirectoryCreation(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
@@ -326,8 +323,7 @@ final class TongjiSubDirectoryCrudControllerTest extends AbstractEasyAdminContro
 
     public function testSubDirectoryPathValidation(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
@@ -380,8 +376,7 @@ final class TongjiSubDirectoryCrudControllerTest extends AbstractEasyAdminContro
 
     public function testSiteRelationshipValidation(): void
     {
-        $client = self::createClientWithDatabase();
-        $this->loginAsAdmin($client);
+        $client = self::createAuthenticatedClient();
 
         /** @var EntityManagerInterface $entityManager */
         $entityManager = self::getContainer()->get('doctrine.orm.entity_manager');
