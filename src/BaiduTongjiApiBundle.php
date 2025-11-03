@@ -10,6 +10,7 @@ use Tourze\BaiduOauth2IntegrateBundle\BaiduOauth2IntegrateBundle;
 use Tourze\BundleDependency\BundleDependencyInterface;
 use Tourze\DoctrineIndexedBundle\DoctrineIndexedBundle;
 use Tourze\DoctrineTimestampBundle\DoctrineTimestampBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 
 class BaiduTongjiApiBundle extends Bundle implements BundleDependencyInterface
 {
@@ -23,6 +24,7 @@ class BaiduTongjiApiBundle extends Bundle implements BundleDependencyInterface
             BaiduOauth2IntegrateBundle::class => ['all' => true],
             DoctrineIndexedBundle::class => ['all' => true],
             DoctrineTimestampBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
         ];
     }
 }
