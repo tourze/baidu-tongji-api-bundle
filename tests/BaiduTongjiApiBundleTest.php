@@ -9,6 +9,7 @@ use Tourze\BaiduOauth2IntegrateBundle\BaiduOauth2IntegrateBundle;
 use Tourze\BaiduTongjiApiBundle\BaiduTongjiApiBundle;
 use Tourze\DoctrineIndexedBundle\DoctrineIndexedBundle;
 use Tourze\DoctrineTimestampBundle\DoctrineTimestampBundle;
+use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractBundleTestCase;
 
 /**
@@ -27,6 +28,7 @@ final class BaiduTongjiApiBundleTest extends AbstractBundleTestCase
             BaiduOauth2IntegrateBundle::class => ['all' => true],
             DoctrineIndexedBundle::class => ['all' => true],
             DoctrineTimestampBundle::class => ['all' => true],
+            EasyAdminMenuBundle::class => ['all' => true],
         ];
 
         $this->assertSame($expectedDependencies, $dependencies);
