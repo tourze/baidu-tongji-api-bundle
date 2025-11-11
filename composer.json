@@ -28,7 +28,7 @@
     "tourze/baidu-oauth2-integrate-bundle": "0.0.*",
     "tourze/bundle-dependency": "1.*",
     "tourze/doctrine-indexed-bundle": "1.0.*",
-    "tourze/doctrine-timestamp-bundle": "1.0.*",
+    "tourze/doctrine-timestamp-bundle": "1.1.*",
     "tourze/easy-admin-menu-bundle": "1.0.*",
     "tourze/symfony-dependency-service-loader": "1.0.*"
   },
