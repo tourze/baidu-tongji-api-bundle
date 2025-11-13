@@ -110,7 +110,7 @@ class TongjiSiteService
         }
 
         $site->setDomain($domain);
-        $site->setStatus(is_int($siteData['status']) ? $siteData['status'] : 0);
+        $site->setStatus(isset($siteData['status']) && is_int($siteData['status']) ? $siteData['status'] : 0);
         $site->setRawData($siteData);
 
         $this->setTimestampFromUnixTime($site, $siteData['create_time'] ?? null, 'setSiteCreateTime');
@@ -163,7 +163,7 @@ class TongjiSiteService
         }
 
         $subDir->setSubDir($subDirName);
-        $subDir->setStatus(is_int($subDirData['status']) ? $subDirData['status'] : 0);
+        $subDir->setStatus(isset($subDirData['status']) && is_int($subDirData['status']) ? $subDirData['status'] : 0);
         $subDir->setRawData($subDirData);
 
         $this->setTimestampFromUnixTime($subDir, $subDirData['create_time'] ?? null, 'setSubDirCreateTime');
