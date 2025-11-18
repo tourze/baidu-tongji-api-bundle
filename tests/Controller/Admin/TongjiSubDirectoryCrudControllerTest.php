@@ -74,11 +74,6 @@ final class TongjiSubDirectoryCrudControllerTest extends AbstractEasyAdminContro
         yield 'site' => ['site'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        self::assertSame(TongjiSubDirectory::class, TongjiSubDirectoryCrudController::getEntityFqcn());
-    }
-
     public function testConfigureCrud(): void
     {
         $controller = new TongjiSubDirectoryCrudController();

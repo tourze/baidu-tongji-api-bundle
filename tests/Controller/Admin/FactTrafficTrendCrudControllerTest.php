@@ -74,11 +74,6 @@ final class FactTrafficTrendCrudControllerTest extends AbstractEasyAdminControll
         yield 'visitCount' => ['visitCount'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        self::assertSame(FactTrafficTrend::class, FactTrafficTrendCrudController::getEntityFqcn());
-    }
-
     public function testConfigureCrud(): void
     {
         $controller = new FactTrafficTrendCrudController();

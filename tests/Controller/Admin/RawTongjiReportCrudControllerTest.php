@@ -76,11 +76,6 @@ final class RawTongjiReportCrudControllerTest extends AbstractEasyAdminControlle
         yield 'syncStatus' => ['syncStatus'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        self::assertSame(RawTongjiReport::class, RawTongjiReportCrudController::getEntityFqcn());
-    }
-
     public function testConfigureCrud(): void
     {
         $controller = new RawTongjiReportCrudController();

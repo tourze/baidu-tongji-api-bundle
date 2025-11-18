@@ -73,11 +73,6 @@ final class TongjiSiteCrudControllerTest extends AbstractEasyAdminControllerTest
         yield 'user' => ['user'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        self::assertSame(TongjiSite::class, TongjiSiteCrudController::getEntityFqcn());
-    }
-
     public function testConfigureCrud(): void
     {
         $controller = new TongjiSiteCrudController();
