@@ -14,7 +14,7 @@ use Tourze\PHPUnitSymfonyKernelTest\Attribute\AsRepository;
  * @extends ServiceEntityRepository<TongjiSubDirectory>
  */
 #[AsRepository(entityClass: TongjiSubDirectory::class)]
-class TongjiSubDirectoryRepository extends ServiceEntityRepository
+final class TongjiSubDirectoryRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

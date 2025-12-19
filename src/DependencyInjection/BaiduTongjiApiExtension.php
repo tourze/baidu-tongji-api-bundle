@@ -6,7 +6,7 @@ namespace Tourze\BaiduTongjiApiBundle\DependencyInjection;
 
 use Tourze\SymfonyDependencyServiceLoader\AutoExtension;
 
-class BaiduTongjiApiExtension extends AutoExtension
+final class BaiduTongjiApiExtension extends AutoExtension
 {
     protected function getConfigDir(): string
     {

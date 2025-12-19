@@ -12,7 +12,7 @@ use Tourze\DoctrineIndexedBundle\DoctrineIndexedBundle;
 use Tourze\DoctrineTimestampBundle\DoctrineTimestampBundle;
 use Tourze\EasyAdminMenuBundle\EasyAdminMenuBundle;
 
-class BaiduTongjiApiBundle extends Bundle implements BundleDependencyInterface
+final class BaiduTongjiApiBundle extends Bundle implements BundleDependencyInterface
 {
     /**
      * @return array<class-string<Bundle>, array<string, bool>>

@@ -10,7 +10,7 @@ use Tourze\BaiduOauth2IntegrateBundle\Entity\BaiduOAuth2Config;
 use Tourze\BaiduOauth2IntegrateBundle\Entity\BaiduOAuth2User;
 use Tourze\BaiduTongjiApiBundle\Entity\TongjiSite;
 
-class TongjiSiteFixtures extends Fixture
+final class TongjiSiteFixtures extends Fixture
 {
     public const SITE_1_REFERENCE = 'site-1';
     public const SITE_2_REFERENCE = 'site-2';

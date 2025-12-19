@@ -18,7 +18,7 @@ use Tourze\BaiduTongjiApiBundle\Service\TongjiSiteService;
     name: self::NAME,
     description: '同步所有用户的百度统计站点数据'
 )]
-class SyncTongjiSitesCommand extends Command
+final class SyncTongjiSitesCommand extends Command
 {
     public const NAME = 'tongji:sync-sites';
 

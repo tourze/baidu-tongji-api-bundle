@@ -14,7 +14,7 @@ use Tourze\BaiduTongjiApiBundle\Exception\TongjiApiException;
 use Tourze\BaiduTongjiApiBundle\Repository\RawTongjiReportRepository;
 
 #[WithMonologChannel(channel: 'baidu_tongji_api')]
-class TongjiReportSyncService
+final class TongjiReportSyncService
 {
     public function __construct(
         private EntityManagerInterface $em,

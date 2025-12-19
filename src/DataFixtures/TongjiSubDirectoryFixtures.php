@@ -10,7 +10,7 @@ use Doctrine\Persistence\ObjectManager;
 use Tourze\BaiduTongjiApiBundle\Entity\TongjiSite;
 use Tourze\BaiduTongjiApiBundle\Entity\TongjiSubDirectory;
 
-class TongjiSubDirectoryFixtures extends Fixture implements DependentFixtureInterface
+final class TongjiSubDirectoryFixtures extends Fixture implements DependentFixtureInterface
 {
     public const SUBDIR_1_REFERENCE = 'subdir-1';
     public const SUBDIR_2_REFERENCE = 'subdir-2';

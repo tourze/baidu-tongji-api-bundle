@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\BaiduTongjiApiBundle\Exception;
 
-class TongjiApiException extends \Exception
+final class TongjiApiException extends \Exception
 {
     public static function accessTokenExpired(): self
     {

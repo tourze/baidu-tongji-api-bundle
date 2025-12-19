@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\BaiduTongjiApiBundle\Command;
 
+use Monolog\Attribute\WithMonologChannel;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -21,7 +22,8 @@ use Tourze\BaiduTongjiApiBundle\Service\TongjiReportSyncService;
     name: self::NAME,
     description: '同步百度统计报告数据'
 )]
-class SyncTongjiReportCommand extends Command
+#[WithMonologChannel(channel: 'baidu_tongji_api')]
+final class SyncTongjiReportCommand extends Command
 {
     public const NAME = 'tongji:sync-report';
     private const SUPPORTED_METHODS = [

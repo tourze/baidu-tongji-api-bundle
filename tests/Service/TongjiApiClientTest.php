@@ -4,7 +4,12 @@ namespace Tourze\BaiduTongjiApiBundle\Tests\Service;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\ResponseInterface;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Psr\Log\LoggerInterface;
 use Tourze\BaiduOauth2IntegrateBundle\Entity\BaiduOAuth2Config;
 use Tourze\BaiduOauth2IntegrateBundle\Entity\BaiduOAuth2User;
 use Tourze\BaiduTongjiApiBundle\Exception\TongjiApiException;
@@ -18,7 +23,9 @@ use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 #[RunTestsInSeparateProcesses]
 final class TongjiApiClientTest extends AbstractIntegrationTestCase
 {
-    private HttpClientInterface $httpClient;
+    private HttpClientInterface&MockObject $httpClient;
+
+    private LoggerInterface&MockObject $logger;
 
     private TongjiApiClient $apiClient;
 
@@ -45,10 +52,22 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
             ],
         ];
 
-        $response = new TestResponse(false !== json_encode($responseData) ? json_encode($responseData) : '', 200);
-        /** @var TestHttpClient $httpClient */
-        $httpClient = $this->httpClient;
-        $httpClient->setExpectedResponse($response);
+        // 创建Mock响应对象
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getContent')->willReturn(json_encode($responseData));
+
+        // 配置HTTP客户端Mock
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->with('GET', 'https://openapi.baidu.com/rest/2.0/tongji/config/getSiteList', [
+                'query' => [
+                    'access_token' => 'valid_token',
+                ],
+                'timeout' => 30,
+            ])
+            ->willReturn($response);
 
         $result = $this->apiClient->getSiteList($this->user);
 
@@ -81,10 +100,14 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
             'error_msg' => 'Invalid access token',
         ];
 
-        $response = new TestResponse(false !== json_encode($errorResponse) ? json_encode($errorResponse) : '', 200);
-        /** @var TestHttpClient $httpClient */
-        $httpClient = $this->httpClient;
-        $httpClient->setExpectedResponse($response);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getContent')->willReturn(json_encode($errorResponse));
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
 
         $this->apiClient->getSiteList($this->user);
     }
@@ -94,10 +117,14 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
         $this->expectException(TongjiApiException::class);
         $this->expectExceptionMessageMatches('/Invalid JSON response from API/');
 
-        $response = new TestResponse('invalid json', 200);
-        /** @var TestHttpClient $httpClient */
-        $httpClient = $this->httpClient;
-        $httpClient->setExpectedResponse($response);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getContent')->willReturn('invalid json');
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
 
         $this->apiClient->getSiteList($this->user);
     }
@@ -114,10 +141,9 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
             ],
         ];
 
-        $response = new TestResponse(false !== json_encode($responseData) ? json_encode($responseData) : '', 200);
-        /** @var TestHttpClient $httpClient */
-        $httpClient = $this->httpClient;
-        $httpClient->setExpectedResponse($response);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getContent')->willReturn(json_encode($responseData));
 
         $params = [
             'site_id' => '12345',
@@ -127,6 +153,15 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
             'metrics' => 'pv_count,visit_count',
         ];
 
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->with('GET', 'https://openapi.baidu.com/rest/2.0/tongji/report/getData', [
+                'query' => array_merge(['access_token' => 'valid_token'], $params),
+                'timeout' => 30,
+            ])
+            ->willReturn($response);
+
         $result = $this->apiClient->getReportData($this->user, $params);
         $this->assertSame($responseData, $result);
     }
@@ -135,16 +170,29 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
     {
         $responseData = ['result' => ['fields' => ['date', 'pv_count'], 'items' => []]];
 
-        $response = new TestResponse(false !== json_encode($responseData) ? json_encode($responseData) : '', 200);
-        /** @var TestHttpClient $httpClient */
-        $httpClient = $this->httpClient;
-        $httpClient->setExpectedResponse($response);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getContent')->willReturn(json_encode($responseData));
 
         $params = [
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-02',
             'metrics' => 'pv_count',
         ];
+
+        $expectedParams = array_merge([
+            'site_id' => '12345',
+            'method' => 'trend/time/a',
+        ], $params);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->with('GET', 'https://openapi.baidu.com/rest/2.0/tongji/report/getData', [
+                'query' => array_merge(['access_token' => 'valid_token'], $expectedParams),
+                'timeout' => 30,
+            ])
+            ->willReturn($response);
 
         $result = $this->apiClient->getTrendTimeReport($this->user, '12345', $params);
         $this->assertSame($responseData, $result);
@@ -154,12 +202,22 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
     {
         $responseData = ['result' => ['fields' => ['area', 'visit_time'], 'items' => []]];
 
-        $response = new TestResponse(false !== json_encode($responseData) ? json_encode($responseData) : '', 200);
-        /** @var TestHttpClient $httpClient */
-        $httpClient = $this->httpClient;
-        $httpClient->setExpectedResponse($response);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getContent')->willReturn(json_encode($responseData));
 
         $params = ['metrics' => 'area,visit_time'];
+
+        $expectedParams = array_merge([
+            'site_id' => '12345',
+            'method' => 'trend/latest/a',
+        ], $params);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
+
         $result = $this->apiClient->getRealtimeVisitorsReport($this->user, '12345', $params);
         $this->assertSame($responseData, $result);
     }
@@ -168,16 +226,25 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
     {
         $responseData = ['result' => ['fields' => ['source', 'pv_count'], 'items' => []]];
 
-        $response = new TestResponse(false !== json_encode($responseData) ? json_encode($responseData) : '', 200);
-        /** @var TestHttpClient $httpClient */
-        $httpClient = $this->httpClient;
-        $httpClient->setExpectedResponse($response);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getContent')->willReturn(json_encode($responseData));
 
         $params = [
             'start_date' => '2023-01-01',
             'end_date' => '2023-01-02',
             'metrics' => 'pv_count',
         ];
+
+        $expectedParams = array_merge([
+            'site_id' => '12345',
+            'method' => 'source/all/a',
+        ], $params);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
 
         $result = $this->apiClient->getSourceAllReport($this->user, '12345', $params);
         $this->assertSame($responseData, $result);
@@ -187,10 +254,9 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
     {
         $responseData = ['result' => ['fields' => ['url', 'pv_count'], 'items' => []]];
 
-        $response = new TestResponse(false !== json_encode($responseData) ? json_encode($responseData) : '', 200);
-        /** @var TestHttpClient $httpClient */
-        $httpClient = $this->httpClient;
-        $httpClient->setExpectedResponse($response);
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getContent')->willReturn(json_encode($responseData));
 
         $params = [
             'start_date' => '2023-01-01',
@@ -198,23 +264,37 @@ final class TongjiApiClientTest extends AbstractIntegrationTestCase
             'metrics' => 'pv_count',
         ];
 
+        $expectedParams = array_merge([
+            'site_id' => '12345',
+            'method' => 'visit/toppage/a',
+        ], $params);
+
+        $this->httpClient
+            ->expects($this->once())
+            ->method('request')
+            ->willReturn($response);
+
         $result = $this->apiClient->getVisitToppageReport($this->user, '12345', $params);
         $this->assertSame($responseData, $result);
     }
 
     protected function onSetUp(): void
     {
-        // 使用TestHttpClient替代匿名类
-        $this->httpClient = new TestHttpClient();
+        // 创建HTTP客户端Mock
+        $this->httpClient = $this->createMock(HttpClientInterface::class);
 
-        // 将HttpClient注入到容器中
+        // 创建Logger Mock
+        $this->logger = $this->createMock(LoggerInterface::class);
+
+        // 将Mock注入容器，替换测试框架的默认MockHttpClient
         $container = self::getContainer();
         $container->set(HttpClientInterface::class, $this->httpClient);
+        $container->set('http_client', $this->httpClient);
+        // 为带channel的logger设置Mock
+        $container->set('monolog.logger.baidu_tongji_api', $this->logger);
 
-        // 从容器获取被测试的服务
-        /** @var TongjiApiClient $apiClient */
-        $apiClient = $container->get(TongjiApiClient::class);
-        $this->apiClient = $apiClient;
+        // 从容器获取被测试的服务实例
+        $this->apiClient = self::getService(TongjiApiClient::class);
 
         $config = new BaiduOAuth2Config();
         $this->user = new BaiduOAuth2User();

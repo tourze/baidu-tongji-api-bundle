@@ -12,7 +12,7 @@ use Tourze\BaiduOauth2IntegrateBundle\Entity\BaiduOAuth2User;
 use Tourze\BaiduTongjiApiBundle\Exception\TongjiApiException;
 
 #[WithMonologChannel(channel: 'baidu_tongji_api')]
-class TongjiApiClient
+final class TongjiApiClient
 {
     private const BASE_URL = 'https://openapi.baidu.com/rest/2.0/tongji';
 

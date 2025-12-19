@@ -8,7 +8,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Tourze\BaiduTongjiApiBundle\Entity\FactTrafficTrend;
 
-class FactTrafficTrendFixtures extends Fixture
+final class FactTrafficTrendFixtures extends Fixture
 {
     public const TREND_1_REFERENCE = 'trend-1';
     public const TREND_2_REFERENCE = 'trend-2';

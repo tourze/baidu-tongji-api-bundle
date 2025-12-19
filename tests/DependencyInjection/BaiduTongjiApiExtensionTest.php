@@ -168,7 +168,7 @@ final class BaiduTongjiApiExtensionTest extends AbstractDependencyInjectionExten
 
         foreach ($expectedAliases as $alias) {
             $this->assertTrue(
-                $this->container->hasDefinition($alias),
+                $this->container->hasAlias($alias),
                 "Service alias {$alias} should be defined"
             );
         }

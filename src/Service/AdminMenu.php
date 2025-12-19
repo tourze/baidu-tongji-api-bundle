@@ -15,7 +15,7 @@ use Tourze\BaiduTongjiApiBundle\Controller\Admin\TongjiSiteCrudController;
 use Tourze\BaiduTongjiApiBundle\Controller\Admin\TongjiSubDirectoryCrudController;
 use Tourze\EasyAdminMenuBundle\Service\MenuProviderInterface;
 
-class AdminMenu implements MenuProviderInterface
+final class AdminMenu implements MenuProviderInterface
 {
     /**
      * 获取百度统计API包的管理菜单项.

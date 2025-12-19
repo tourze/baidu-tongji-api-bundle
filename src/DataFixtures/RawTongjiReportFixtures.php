@@ -8,7 +8,7 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 use Tourze\BaiduTongjiApiBundle\Entity\RawTongjiReport;
 
-class RawTongjiReportFixtures extends Fixture
+final class RawTongjiReportFixtures extends Fixture
 {
     public const REPORT_1_REFERENCE = 'report-1';
     public const REPORT_2_REFERENCE = 'report-2';

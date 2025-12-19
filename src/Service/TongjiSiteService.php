@@ -14,7 +14,7 @@ use Tourze\BaiduTongjiApiBundle\Repository\TongjiSiteRepository;
 use Tourze\BaiduTongjiApiBundle\Repository\TongjiSubDirectoryRepository;
 
 #[WithMonologChannel(channel: 'baidu_tongji_api')]
-class TongjiSiteService
+final class TongjiSiteService
 {
     public function __construct(
         private TongjiApiClient $apiClient,

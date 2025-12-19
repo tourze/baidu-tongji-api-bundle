@@ -5,10 +5,14 @@ namespace Tourze\BaiduTongjiApiBundle\Tests\Service;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+use Symfony\Component\HttpClient\MockHttpClient;
+use Symfony\Component\HttpClient\Response\MockResponse;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 use Tourze\BaiduOauth2IntegrateBundle\Entity\BaiduOAuth2Config;
 use Tourze\BaiduOauth2IntegrateBundle\Entity\BaiduOAuth2User;
 use Tourze\BaiduTongjiApiBundle\Entity\TongjiSite;
 use Tourze\BaiduTongjiApiBundle\Entity\TongjiSubDirectory;
+use Tourze\BaiduTongjiApiBundle\Service\TongjiApiClient;
 use Tourze\BaiduTongjiApiBundle\Service\TongjiSiteService;
 use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 
@@ -20,6 +24,8 @@ use Tourze\PHPUnitSymfonyKernelTest\AbstractIntegrationTestCase;
 final class TongjiSiteServiceTest extends AbstractIntegrationTestCase
 {
     private TongjiSiteService $service;
+
+    private MockHttpClient $mockHttpClient;
 
     public function testServiceExists(): void
     {
@@ -51,7 +57,7 @@ final class TongjiSiteServiceTest extends AbstractIntegrationTestCase
         $user->setUsername('test_user');
         $entityManager->persist($user);
 
-        // 使用TestSiteApiClient替代匿名类
+        // 配置Mock HTTP响应
         $mockApiResponse = [
             'list' => [
                 [
@@ -84,13 +90,7 @@ final class TongjiSiteServiceTest extends AbstractIntegrationTestCase
             ],
         ];
 
-        $mockApiClient = new TestSiteApiClient($mockApiResponse);
-
-        // 替换服务中的 API 客户端
-        $reflection = new \ReflectionClass($this->service);
-        $apiClientProperty = $reflection->getProperty('apiClient');
-        $apiClientProperty->setAccessible(true);
-        $apiClientProperty->setValue($this->service, $mockApiClient);
+        $this->setupMockHttpClient($mockApiResponse);
 
         // 执行同步操作
         $sites = $this->service->syncUserSites($user);
@@ -185,14 +185,8 @@ final class TongjiSiteServiceTest extends AbstractIntegrationTestCase
         $user->setConfig($config);
         $entityManager->persist($user);
 
-        // 使用TestSiteApiClient返回空列表
-        $mockApiClient = new TestSiteApiClient([]);
-
-        // 替换 API 客户端
-        $reflection = new \ReflectionClass($this->service);
-        $apiClientProperty = $reflection->getProperty('apiClient');
-        $apiClientProperty->setAccessible(true);
-        $apiClientProperty->setValue($this->service, $mockApiClient);
+        // 配置Mock HTTP响应返回空列表
+        $this->setupMockHttpClient([]);
 
         // 执行同步
         $sites = $this->service->syncUserSites($user);
@@ -220,7 +214,7 @@ final class TongjiSiteServiceTest extends AbstractIntegrationTestCase
         $user->setConfig($config);
         $entityManager->persist($user);
 
-        // 使用TestSiteApiClient返回包含无效数据的响应
+        // 配置Mock HTTP响应返回包含无效数据的响应
         $mockApiResponse = [
             'list' => [
                 [
@@ -255,13 +249,7 @@ final class TongjiSiteServiceTest extends AbstractIntegrationTestCase
             ],
         ];
 
-        $mockApiClient = new TestSiteApiClient($mockApiResponse);
-
-        // 替换 API 客户端
-        $reflection = new \ReflectionClass($this->service);
-        $apiClientProperty = $reflection->getProperty('apiClient');
-        $apiClientProperty->setAccessible(true);
-        $apiClientProperty->setValue($this->service, $mockApiClient);
+        $this->setupMockHttpClient($mockApiResponse);
 
         // 执行同步
         $sites = $this->service->syncUserSites($user);
@@ -328,7 +316,7 @@ final class TongjiSiteServiceTest extends AbstractIntegrationTestCase
         $entityManager->flush();
         $entityManager->clear();
 
-        // 使用TestSiteApiClient返回更新的数据
+        // 配置Mock HTTP响应返回更新的数据
         $mockApiResponse = [
             'list' => [
                 [
@@ -352,13 +340,7 @@ final class TongjiSiteServiceTest extends AbstractIntegrationTestCase
             ],
         ];
 
-        $mockApiClient = new TestSiteApiClient($mockApiResponse);
-
-        // 替换 API 客户端
-        $reflection = new \ReflectionClass($this->service);
-        $apiClientProperty = $reflection->getProperty('apiClient');
-        $apiClientProperty->setAccessible(true);
-        $apiClientProperty->setValue($this->service, $mockApiClient);
+        $this->setupMockHttpClient($mockApiResponse);
 
         // 执行同步
         $sites = $this->service->syncUserSites($user);
@@ -392,9 +374,41 @@ final class TongjiSiteServiceTest extends AbstractIntegrationTestCase
 
     protected function onSetUp(): void
     {
+        // 从容器获取被测试的服务实例
+        $this->service = self::getService(TongjiSiteService::class);
+    }
+
+    /**
+     * 设置Mock HTTP客户端，用于模拟百度统计API响应
+     *
+     * @param array<string, mixed> $responseData API响应数据
+     */
+    private function setupMockHttpClient(array $responseData): void
+    {
         $container = self::getContainer();
-        /** @var TongjiSiteService $service */
-        $service = $container->get(TongjiSiteService::class);
-        $this->service = $service;
+
+        // 创建Mock响应
+        $mockResponse = new MockResponse(
+            json_encode($responseData, JSON_THROW_ON_ERROR),
+            [
+                'http_code' => 200,
+                'response_headers' => ['Content-Type' => 'application/json'],
+            ]
+        );
+
+        // 创建Mock HTTP客户端
+        $mockHttpClient = new MockHttpClient($mockResponse);
+
+        // 获取logger
+        $logger = $container->get('logger');
+
+        // 创建新的TongjiApiClient实例，使用Mock HTTP客户端
+        $mockApiClient = new TongjiApiClient($mockHttpClient, $logger);
+
+        // 将Mock客户端注入到容器中
+        $container->set(TongjiApiClient::class, $mockApiClient);
+
+        // 重新创建服务实例，使其使用Mock的API客户端
+        $this->service = self::getService(TongjiSiteService::class);
     }
 }
